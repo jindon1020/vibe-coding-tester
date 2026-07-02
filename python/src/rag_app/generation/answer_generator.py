@@ -5,7 +5,7 @@ from collections.abc import AsyncIterator
 
 class AnswerGenerator:
     async def stream(self, prompt: str) -> AsyncIterator[str]:
-        raise NotImplementedError
+        raise RuntimeError("AnswerGenerator.stream must be implemented by subclasses")
 
 
 class FakeAnswerGenerator(AnswerGenerator):
@@ -16,4 +16,3 @@ class FakeAnswerGenerator(AnswerGenerator):
         self.prompts.append(prompt)
         yield "FAKE_RAG_ANSWER:"
         yield prompt[:80]
-
