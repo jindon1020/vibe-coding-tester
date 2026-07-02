@@ -96,7 +96,7 @@ def git_output(args: list[str]) -> str:
 
 
 def prompt_log_summary() -> dict:
-    path = ROOT / ".ai-interview" / "prompts.md"
+    path = ROOT / ".agents" / "prompt_record.md"
     if not path.exists():
         return {"exists": False, "meaningful_entries": 0, "preview": ""}
     text = path.read_text(encoding="utf-8")
@@ -157,7 +157,7 @@ def main() -> int:
         "git_diff_stat": diff_stat,
         "next_steps_for_agent": [
             "Inspect implementation files for the selected language.",
-            "Inspect .ai-interview/prompts.md if present for AI process evidence.",
+            "Inspect .agents/prompt_record.md if present for AI process evidence.",
             "Assign RAG code review score out of 35.",
             "Assign AI process score out of 20.",
             "Return the final evaluation in the SKILL.md output format.",

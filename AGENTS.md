@@ -45,6 +45,8 @@ docx -> chunks -> keyword retrieval -> ranked context -> prompt -> SSE response
 - Java 代码需保持 Java 8 兼容。
 - Python 代码需保持 Python 3.10+ 兼容。
 - API key、密码、令牌等敏感信息不得写入仓库。
+- 如果候选人使用 AI 辅助完成任务，需要把每次发送给 AI 的原始提示词记录到 `.agents/prompt_record.md`，用于评估 AI 使用过程。
+- `.agents/prompt_record.md` 只记录任务相关提示词、采纳情况和简要说明，不得记录真实 API key、密码、令牌或其他敏感信息。
 
 ## Prohibited Changes
 
