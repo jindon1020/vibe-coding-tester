@@ -1,0 +1,10 @@
+.DS_Store
+.idea/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+target/
+.m2/
+*.log
