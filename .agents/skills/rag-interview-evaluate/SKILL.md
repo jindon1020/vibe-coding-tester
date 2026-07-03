@@ -1,119 +1,119 @@
 ---
 name: rag-interview-evaluate
-description: Run the full RAG interview evaluation for a candidate branch, including automatic tests, static checks, code review score, AI prompt process score, and final 100-point result. Use when asked to score, evaluate, grade, or验收 a candidate solution in this repository.
+description: 对 RAG 面试候选分支执行完整验收评估，包含自动测试、静态检查、RAG 代码评审、AI 提示词过程评审和 100 分制中文结论。适用于在本仓库中要求打分、评估、grade、evaluate 或验收候选人解答时使用。
 ---
 
-# RAG Interview Evaluation
+# RAG 面试评估
 
-Use this skill to produce one complete candidate assessment.
+使用此 skill 产出一份完整的中文候选人评估报告。
 
-## Inputs
+## 输入
 
-Ask for the language only if it is not obvious from the candidate's implementation:
+仅当无法从候选人实现中判断语言时，询问候选人选择的语言：
 
 - `python`
 - `java`
 
-Default to the language with meaningful candidate changes if only one side was edited.
+如果只有一侧语言目录存在有效候选变更，默认评估该语言。
 
-## Required Workflow
+## 必须执行的流程
 
-1. Run the bundled report script:
+1. 运行内置报告脚本：
 
    ```bash
    python3 .agents/skills/rag-interview-evaluate/scripts/collect_report.py --language <python|java>
    ```
 
-2. Inspect the changed implementation files for the selected language.
+2. 检查所选语言下发生变更的实现文件。
 
-3. Inspect `.ai-interview/prompts.md` if it exists.
+3. 如果存在 `.agents/prompt_record.md`，检查其中记录的 AI 提示词过程。
 
-4. If available, inspect `git diff master...HEAD`. If the repository has no master reference or this fails, use `git diff -- .`.
+4. 如果可用，检查 `git diff master...HEAD`。如果仓库没有 `master` 引用或命令失败，改用 `git diff -- .`。
 
-5. Produce a final score out of 100:
+5. 产出中文最终评估，满分 100 分：
 
-   - Automatic score from script: 45 points
-   - RAG code review: 35 points
-   - AI process review: 20 points
+   - 脚本自动得分：45 分
+   - RAG 代码评审：35 分
+   - AI 过程评审：20 分
 
-Do not mechanically give full manual points. Ground every manual score in evidence from code, tests, prompt log, and diff.
+不要机械地给人工部分满分。每一项人工分都必须基于代码、测试、提示词记录和 diff 中的证据。
 
-## RAG Code Review, 35 Points
+## RAG 代码评审，35 分
 
-Score implementation quality:
+评估实现质量：
 
-- New feature completeness, 20:
-  - Loads non-empty `.docx` paragraphs.
-  - Stores chunks in memory and clears old chunks on reload.
-  - Implements deterministic keyword retrieval.
-  - Sorts by score descending and preserves stable order for ties.
-  - Deduplicates identical chunk text.
-  - Builds prompt with instruction, context, source metadata, score, and question.
-  - Generates answer only after context exists.
+- 新功能完整性，20 分：
+  - 能加载 `.docx` 中的非空段落。
+  - 能把 chunk 存入内存，并在重新加载时清空旧 chunk。
+  - 实现确定性的关键词召回。
+  - 按 score 降序排序，并在同分时保持稳定顺序。
+  - 对相同 chunk 文本去重。
+  - 构建包含指令、上下文、来源元数据、score 和问题的 prompt。
+  - 仅在存在上下文后生成回答。
 
-- Change handling, 10:
-  - No-context path returns `未找到相关资料`.
-  - No-context path does not call `AnswerGenerator`.
-  - SSE contract keeps final `done` event.
-  - Implementation stays compatible with Java 8 or Python 3.10+.
+- 变更处理，10 分：
+  - 无上下文路径返回 `未找到相关资料`。
+  - 无上下文路径不调用 `AnswerGenerator`。
+  - SSE 契约保留最终 `done` 事件。
+  - 实现保持 Java 8 或 Python 3.10+ 兼容。
 
-- Code quality and safety, 5:
-  - Clear layering across loader, knowledge base, retriever, prompt builder, service.
-  - No hardcoded answers for fixture-specific keywords.
-  - No hardcoded secrets.
-  - Small, readable methods with limited branching.
+- 代码质量和安全性，5 分：
+  - loader、knowledge base、retriever、prompt builder、service 分层清晰。
+  - 没有针对测试 fixture 关键词硬编码答案。
+  - 没有硬编码密钥。
+  - 方法短小可读，分支控制合理。
 
-## AI Process Review, 20 Points
+## AI 过程评审，20 分
 
-Score process quality from `.ai-interview/prompts.md` if present, plus observed evidence:
+优先基于 `.agents/prompt_record.md` 评分；如果文件不存在或记录不足，再结合面试官记录、git diff 和可见工作流证据评分：
 
-- Demand clarification, 3
-- Context gathering, 3
-- Task decomposition, 3
-- Scope control, 3
-- Testing and debugging, 3
-- Code review awareness, 2
-- Change handling, 2
-- Log integrity, 1
+- 需求澄清，3 分
+- 上下文收集，3 分
+- 任务拆解，3 分
+- 范围控制，3 分
+- 测试和调试，3 分
+- 代码评审意识，2 分
+- 变更处理，2 分
+- 记录完整性，1 分
 
-If the prompt log is missing or empty, rely more heavily on interviewer notes, git diff, and visible workflow evidence. Do not automatically fail the candidate solely because the prompt log is absent.
+如果提示词记录缺失或为空，不要仅因此直接判定候选人不通过；但 AI 过程分应更依赖其他可见证据，并明确说明证据不足的影响。
 
-## Output Format
+## 输出格式
 
-Return this exact structure:
+最终结果必须使用中文。保持以下章节顺序和分数格式：
 
 ```text
-RAG Interview Evaluation
+RAG 面试评估
 
-Language: <python|java>
-Final Score: <n>/100
+语言: <python|java>
+最终得分: <n>/100
 
-Score Breakdown:
-- Automatic tests/static: <n>/45
-- RAG code review: <n>/35
-- AI process review: <n>/20
+得分拆解:
+- 自动测试/静态检查: <n>/45
+- RAG 代码评审: <n>/35
+- AI 过程评审: <n>/20
 
-Automatic Result:
-- Unit tests: <n>/30
-- Static checks: <n>/15
-- Key output: <brief summary>
+自动化结果:
+- 单元测试: <n>/30
+- 静态检查: <n>/15
+- 关键输出: <简要中文总结>
 
-Findings:
+问题发现:
 - [P0/P1/P2] ...
 
-AI Process Evidence:
+AI 过程证据:
 - ...
 
-Risks / Possible Test Gaming:
+风险 / 可能的刷题迹象:
 - ...
 
-Recommended Decision:
-- Strong pass / Pass / Borderline / No pass
+建议结论:
+- 强通过 / 通过 / 边缘通过 / 不通过
 ```
 
-## Decision Guidance
+## 结论建议
 
-- Strong pass: 85+ with credible AI process evidence and clean code.
-- Pass: 70-84 with tests passing and acceptable code.
-- Borderline: 55-69 or strong code with weak process evidence.
-- No pass: below 55, failing core tests, hardcoded behavior, or poor process evidence plus poor code.
+- 强通过: 85 分以上，AI 过程证据可信，代码质量干净。
+- 通过: 70-84 分，测试通过且代码质量可接受。
+- 边缘通过: 55-69 分，或代码较强但 AI 过程证据较弱。
+- 不通过: 低于 55 分、核心测试失败、存在硬编码行为，或过程证据和代码质量都较差。
