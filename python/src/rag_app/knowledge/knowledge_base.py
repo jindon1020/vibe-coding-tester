@@ -18,11 +18,15 @@ class InMemoryKnowledgeBase:
     def load_documents(self, paths: list[str | Path]) -> list[DocumentChunk]:
         """Load all docx files into memory and return stored chunks.
 
-        TODO: Candidate should implement this method.
         Expected behavior:
         - Clear previous chunks before loading.
         - Load every path with DocxLoader.
         - Keep chunks in memory.
         """
-        raise NotImplementedError
+        self._chunks.clear()
+        loaded_chunks: list[DocumentChunk] = []
+        for path in paths:
+            loaded_chunks.extend(self.loader.load(path))
 
+        self._chunks.extend(loaded_chunks)
+        return self.chunks

@@ -32,11 +32,18 @@ class RagService:
     ) -> AsyncIterator[str]:
         """Run the full RAG flow and yield answer chunks.
 
-        TODO: Candidate should implement this method.
         Expected behavior:
         - Load documents into the in-memory knowledge base.
         - Retrieve top_k chunks.
         - If no chunks are retrieved, yield NO_CONTEXT_MESSAGE and do not generate an answer.
         - Build prompt and stream output from the local answer generator.
         """
-        raise NotImplementedError
+        chunks = self.knowledge_base.load_documents(doc_paths)
+        retrieved_chunks = self.retriever.retrieve(question, chunks, top_k)
+        if not retrieved_chunks:
+            yield NO_CONTEXT_MESSAGE
+            return
+
+        prompt = self.prompt_builder.build(question, retrieved_chunks)
+        async for answer_chunk in self.answer_generator.stream(prompt):
+            yield answer_chunk
